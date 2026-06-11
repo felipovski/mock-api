@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw compile *)",
+      "Bash(./mvnw test *)",
+      "Bash(./mvnw quarkus:add-extension -Dextensions=\"quarkus-rest-cors\" -q)",
+      "Bash(./mvnw quarkus:list-extensions -q)",
+      "Bash(./mvnw quarkus:list-extensions)",
+      "Bash(docker build *)",
+      "Bash(docker run *)",
+      "Bash(curl -sf http://localhost:8085/appointments)",
+      "Bash(python3 -m json.tool)",
+      "Bash(docker rm *)",
+      "Bash(docker image *)"
+    ]
+  }
+}

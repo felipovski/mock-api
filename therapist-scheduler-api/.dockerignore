@@ -1,0 +1,23 @@
+# Exclui artefatos de build e arquivos desnecessários do contexto Docker.
+# O stage de build no Dockerfile compila do zero via Maven.
+
+# Artefatos de build anteriores (o Dockerfile compila do zero)
+target/
+
+# Controle de versão — nunca inclua no contexto
+.git/
+.gitignore
+
+# Arquivos do IDE e sistema operacional
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.swp
+
+# Documentação e scripts opcionais
+README.md
+*.md
+
+# Outros Dockerfiles (evita confusão)
+src/main/docker/
