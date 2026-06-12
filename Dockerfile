@@ -64,7 +64,7 @@ EXPOSE 8080
 # Healthcheck: verifica se a API responde.
 # --start-period dá tempo para a JVM aquecer antes de marcar como unhealthy.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl -sf http://localhost:8080/appointments > /dev/null || exit 1
+    CMD bash -c 'echo > /dev/tcp/localhost/8080' 2>/dev/null || exit 1
 
 ENTRYPOINT ["/opt/jboss/container/java/run/run-java.sh"]
 
