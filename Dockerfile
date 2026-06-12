@@ -10,9 +10,9 @@ WORKDIR /build
 
 # Copia somente os descritores de dependência primeiro.
 # Camada separada: muda raramente, maximiza cache de build.
-COPY pom.xml ./
-COPY .mvn/ .mvn/
-COPY mvnw ./
+COPY therapist-scheduler-api/pom.xml ./
+COPY therapist-scheduler-api/.mvn/ .mvn/
+COPY therapist-scheduler-api/mvnw ./
 RUN chmod +x mvnw
 
 # Baixa dependências sem compilar o código-fonte.
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.m2,sharing=locked \
     ./mvnw dependency:go-offline --no-transfer-progress -q
 
 # Copia o código e compila.
-COPY src/ src/
+COPY therapist-scheduler-api/src/ src/
 RUN --mount=type=cache,target=/root/.m2,sharing=locked \
     ./mvnw package -DskipTests --no-transfer-progress -q
 
@@ -56,27 +56,24 @@ COPY --from=build --chown=185:185 /build/target/quarkus-app/app/      /deploymen
 COPY --from=build --chown=185:185 /build/target/quarkus-app/quarkus/  /deployments/quarkus/
 
 # Executa como usuário não-root (UID:GID 185:185).
-# Nunca use USER root em imagens de produção.
 USER 185:185
 
 # Declara apenas a porta necessária.
-# Não exponha portas de debug (5005) em produção.
 EXPOSE 8080
 
 # Healthcheck: verifica se a API responde.
 # --start-period dá tempo para a JVM aquecer antes de marcar como unhealthy.
-# Adicione quarkus-smallrye-health ao pom para /q/health/live dedicado.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD curl -sf http://localhost:8080/appointments > /dev/null || exit 1
 
 ENTRYPOINT ["/opt/jboss/container/java/run/run-java.sh"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Flags de segurança recomendadas no `docker run` (ou equivalente no compose):
+# Flags de segurança recomendadas no `docker run`:
 #
-#   --security-opt=no-new-privileges:true   # bloqueia escalada de privilégios via setuid/setgid
-#   --cap-drop=ALL                          # remove todas as Linux capabilities
-#   --read-only                             # filesystem somente-leitura
-#   --tmpfs /tmp:rw,noexec,nosuid,size=64m  # /tmp gravável mas sem execução
-#   --memory=256m --cpus=0.5               # limites de recursos
+#   --security-opt=no-new-privileges:true
+#   --cap-drop=ALL
+#   --read-only
+#   --tmpfs /tmp:rw,noexec,nosuid,size=64m
+#   --memory=256m --cpus=0.5
 # ─────────────────────────────────────────────────────────────────────────────

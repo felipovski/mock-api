@@ -2,9 +2,9 @@
 # O stage de build no Dockerfile compila do zero via Maven.
 
 # Artefatos de build anteriores (o Dockerfile compila do zero)
-target/
+therapist-scheduler-api/target/
 
-# Controle de versão — nunca inclua no contexto
+# Controle de versão
 .git/
 .gitignore
 
@@ -15,9 +15,10 @@ target/
 .DS_Store
 *.swp
 
-# Documentação e scripts opcionais
-README.md
+# Documentação
 *.md
 
-# Outros Dockerfiles (evita confusão)
-src/main/docker/
+# Dockerfiles internos do subprojeto (não necessários no contexto)
+therapist-scheduler-api/src/main/docker/
+therapist-scheduler-api/.dockerignore
+therapist-scheduler-api/Dockerfile
