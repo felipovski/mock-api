@@ -4,22 +4,28 @@ import br.com.felipovski.model.Appointment;
 import br.com.felipovski.model.AppointmentStatus;
 import br.com.felipovski.model.CreateAppointmentRequest;
 import br.com.felipovski.service.MockDataStore;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Appointments")
 @Path("/appointments")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AppointmentResource {
 
-    @Inject
-    MockDataStore store;
+    private final MockDataStore store;
 
+    public AppointmentResource(MockDataStore store) {
+        this.store = store;
+    }
+
+    @Operation(summary = "Lista todas as consultas", description = "Retorna todas as consultas. Filtre por status com o query param ?status=")
     @GET
     public List<Appointment> listAll(@QueryParam("status") AppointmentStatus status) {
         List<Appointment> all = store.getAllAppointments();
@@ -29,6 +35,7 @@ public class AppointmentResource {
         return all;
     }
 
+    @Operation(summary = "Busca consulta por ID")
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) {
@@ -41,6 +48,7 @@ public class AppointmentResource {
         return Response.ok(appointment).build();
     }
 
+    @Operation(summary = "Cria uma nova consulta")
     @POST
     public Response create(CreateAppointmentRequest request) {
         if (request.patientId == null || request.dateTime == null) {
@@ -68,6 +76,7 @@ public class AppointmentResource {
         return Response.status(Response.Status.CREATED).entity(saved).build();
     }
 
+    @Operation(summary = "Atualiza o status de uma consulta", description = "Valores válidos: SCHEDULED, CONFIRMED, CANCELLED, COMPLETED, NO_SHOW")
     @POST
     @Path("/{id}/status")
     public Response updateStatus(@PathParam("id") Long id, Map<String, String> body) {
